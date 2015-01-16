@@ -1,18 +1,43 @@
 import Ember from 'ember';
 
-export function tour(steps, options, callbacks) {
-  var tour = window.introJs();
-  var tourObject = Ember.Object.create({tour: tour});
-  if(typeof options == 'object') {
-    var optionData = options.get('data') || options;
+var withoutNullValues = function(hash){
+  var keys = Ember.keys(hash);
+  var kompact = {};
+  keys.forEach(function(key){
+    var value = hash[key];
+    if(!(value === undefined || value === null)){
+      kompact[key] = value;
+    }
+  });
+  return kompact;
+};
+
+export function startTour(steps, options, afterTour) {
+  var tour = window.introJs(),
+    tourObject = Ember.Object.create({finished: false});
+
+  if(typeof options === 'object') {
+    var rawOptions = options.get('data') || options,
+      optionData = withoutNullValues(rawOptions);
+    tour.setOptions(optionData);
   }
+
   var stepData = steps.map(function(tourStop){
-    return tourStop.get('data') || tourStop;
+    var data = tourStop.get('data') || tourStop;
+    return withoutNullValues(data);
   });
-  tour.setOptions(options);
+
   tour.setOptions({steps: stepData});
+
   tour.onexit(function() {
-    tourObject.set('finished', true)
+    tourObject.set('finished', true);
+    if(afterTour){
+      afterTour()
+    }
   });
+
+  tour.start();
   return tourObject;
-}
+};
+
+
