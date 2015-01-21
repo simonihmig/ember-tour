@@ -45,7 +45,7 @@ export default Ember.Component.extend({
     function(){
       var model = this.get('model');
       if(model && model.get('tourStops')){
-        return model.get('tourStops').sortBy('position');
+        return model.get('tourStops').sortBy('step');
       }
     }
   ),
