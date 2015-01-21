@@ -7,7 +7,8 @@ export default Ember.Mixin.create({
       this.store.find('tour', id).then(function(tour){
         controller.setProperties({
           tour: tour,
-          tourCallbacks: callbacks
+          tourCallbacks: callbacks,
+          tourStarted: true
         });
       });
     }

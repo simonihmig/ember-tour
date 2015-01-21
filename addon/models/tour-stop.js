@@ -6,5 +6,7 @@ export default DS.Model.extend({
   tooltipClass: DS.attr('string'),
   highlightClass: DS.attr('string'),
   position: DS.attr('string'),
-  element: DS.attr('string')
+  element: DS.attr('string'),
+  targetRoute: DS.attr('string'),
+  active: false
 });
