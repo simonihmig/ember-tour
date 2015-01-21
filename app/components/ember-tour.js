@@ -62,14 +62,19 @@ export default Ember.Component.extend({
       previousStop = this.get('previousStop'),
       targetRoute = transitionStop.get('targetRoute'),
       route = this.container.lookup('route:' + targetRoute),
-      renderedProperty = 'lastRenderedTemplate';
+      renderedProperty = 'lastRenderedTemplate',
+      targetElement = transitionStop.get('element');
 
     var routePresent = route && route.get(renderedProperty);
     var currentRouteDifferent = !previousStop || previousStop.get('targetRoute') !== targetRoute;
 
     if(route && (!routePresent || currentRouteDifferent)){
       route.transitionTo(targetRoute);
-      this.finishWhenElementInPage(transitionStop.get('element'));
+      if(targetElement){
+        this.finishWhenElementInPage(targetElement);
+      } else {
+        this.finishTransition();
+      }
     } else {
       this.finishTransition();
     }
