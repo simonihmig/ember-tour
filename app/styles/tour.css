@@ -3,10 +3,31 @@
   display: none;
   z-index: 999999;
   background-color: transparent;
+}
+.introjs-overlay.started {
+  display: block;
+}
+.introjs-overlay.background-disabled {
   width: 100%;
   height: 100%;
 }
-.introjs-overlay.started {
+.introjs-overlay .introjs-helperLayer {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 9999998;
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1500px rgba(0, 0, 0, 0.3);
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+.introjs-overlay.spotlight .introjs-helperLayer {
   display: block;
 }
 
@@ -29,22 +50,6 @@ td, th {
 
 td, th {
   position: relative;
-}
-
-.introjs-helperLayer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 9999998;
-  background-color: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-  border-radius: 4px;
-  box-shadow: 0 0 0 1500px rgba(0, 0, 0, 0.3);
-  -webkit-transition: all 0.3s ease-out;
-  -moz-transition: all 0.3s ease-out;
-  -ms-transition: all 0.3s ease-out;
-  -o-transition: all 0.3s ease-out;
-  transition: all 0.3s ease-out;
 }
 
 .introjs-tooltipReferenceLayer {
