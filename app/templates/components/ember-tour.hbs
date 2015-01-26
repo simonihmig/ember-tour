@@ -2,30 +2,39 @@
     <div class="introjs-helperLayer" {{bind-attr style=tourHelperLayerCss}}></div>
   {{#each tourStop in model.tourStops}}
     {{#tour-stop model=tourStop tourHelperLayerCss=tourHelperLayerCss windowWidth=windowWidth windowHeight=windowHeight scrollTop=scrollTop}}
-        <div class="introjs-bullets" style="display:none;">
-            <ul>
-                <li><a class="active" href="javascript:void(0);" data-stepnumber="1">&nbsp;</a></li>
-                <li><a href="javascript:void(0);" data-stepnumber="2">&nbsp;</a></li>
-                <li><a href="javascript:void(0);" data-stepnumber="3">&nbsp;</a></li>
-                <li><a href="javascript:void(0);" data-stepnumber="4">&nbsp;</a></li>
-                <li><a href="javascript:void(0);" data-stepnumber="5">&nbsp;</a></li>
-            </ul>
-        </div>
+
         <div class="row tour-buttons">
-            <div class="col-sm-4 btn-wrap">
-                <div class="btn btn-white" {{action 'exit'}}>Exit</div>
-            </div>
-            <div class="col-sm-4 btn-wrap">
-              {{#if moreBackwardSteps}}
-                  <div class="btn btn-white" {{action 'reverse'}}>Back</div>
-              {{/if}}
-            </div>
-            <div class="col-sm-4 btn-wrap">
-              {{#if moreForwardSteps}}
-                  <div class="btn btn-blue" {{action 'advance'}}>Next</div>
-              {{/if}}
-            </div>
+
+          {{#if moreForwardSteps}}
+
+            {{#if moreBackwardSteps}}
+                <div class="col-sm-6">
+
+                    <a class="icon-chevron-left" {{action 'reverse'}}></a>
+                </div>
+            {{else}}
+                <div class="col-sm-3"></div>
+            {{/if}}
+              <div class="col-sm-6">
+                  <a class="icon-chevron-right" {{action 'advance'}}></a>
+              </div>
+          {{else}}
+              <div class="col-sm-12">
+                  <a {{action 'exit'}}>Done</a>
+              </div>
+          {{/if}}
+
         </div>
+
     {{/tour-stop}}
+      <div class="introjs-bullets" style="display:none;">
+          <ul>
+              <li><a class="active" href="javascript:void(0);" data-stepnumber="1">&nbsp;</a></li>
+              <li><a href="javascript:void(0);" data-stepnumber="2">&nbsp;</a></li>
+              <li><a href="javascript:void(0);" data-stepnumber="3">&nbsp;</a></li>
+              <li><a href="javascript:void(0);" data-stepnumber="4">&nbsp;</a></li>
+              <li><a href="javascript:void(0);" data-stepnumber="5">&nbsp;</a></li>
+          </ul>
+      </div>
   {{/each}}
 </div>
