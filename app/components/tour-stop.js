@@ -38,13 +38,15 @@ export default Ember.Component.extend({
   ),
 
   calculateTooltipOffset: (function(){
-    var tooltip = this.$('.introjs-tooltip')[0];
-    if(tooltip){
-      var offset = tooltip.getBoundingClientRect();
-      offset.width = tooltip.offsetWidth;
-      offset.height = tooltip.offsetHeight;
-      this.set('tooltipOffset', offset);
-    }
+    Ember.run.scheduleOnce('afterRender', this, function(){
+      var tooltip = this.$('.introjs-tooltip')[0];
+      if(tooltip){
+        var offset = tooltip.getBoundingClientRect();
+        offset.width = tooltip.offsetWidth;
+        offset.height = tooltip.offsetHeight;
+        this.set('tooltipOffset', offset);
+      }
+    });
   }
   ).observes('windowHeight', 'windowWidth', 'scrollTop').on('didInsertElement'),
 

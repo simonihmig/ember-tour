@@ -16,7 +16,7 @@ export default Ember.Component.extend({
 
   moreForwardSteps: Ember.computed('currentStopStep', 'sortedTourStops',
     function(){
-      return this.get('currentStopStep') + 1 <= this.get('sortedTourStops.length');
+      return this.get('currentStopStep') + 1 < this.get('sortedTourStops.length');
     }
   ),
 
@@ -61,14 +61,22 @@ export default Ember.Component.extend({
     var transitionStop = this.get('transitionStop'),
       previousStop = this.get('previousStop'),
       targetRoute = transitionStop.get('targetRoute'),
-      route = this.container.lookup('route:' + targetRoute),
+      router = this.container.lookup('router:main').router,
       renderedProperty = 'lastRenderedTemplate',
-      targetElement = transitionStop.get('element');
+      targetElement = transitionStop.get('element'),
+      route;
 
-    var routePresent = route && route.get(renderedProperty);
+    var allRoutes = Ember.keys(router.recognizer.names);
+    var routeExists = allRoutes.indexOf(targetRoute) !== -1;
+
+    if(routeExists){
+      route = this.container.lookup('route:' + targetRoute);
+    }
+
     var currentRouteDifferent = !previousStop || previousStop.get('targetRoute') !== targetRoute;
+    var routePresent = routeExists && route.get(renderedProperty);
 
-    if(route && (!routePresent || currentRouteDifferent)){
+    if(routeExists && (!routePresent || currentRouteDifferent)){
       route.transitionTo(targetRoute);
       if(targetElement){
         this.finishWhenElementInPage(targetElement);
