@@ -48,7 +48,7 @@ export default Ember.Component.extend({
       }
     });
   }
-  ).observes('windowHeight', 'windowWidth', 'scrollTop').on('didInsertElement'),
+  ).observes('windowHeight', 'windowWidth', 'scrollTop', 'active'),
 
   tooltipOffset: null,
 
