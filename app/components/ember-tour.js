@@ -6,11 +6,11 @@ export default Ember.Component.extend({
 
   startTour: (function(){
     if(this.get('started')){
-      var currentStop = this.get('sortedTourStops').objectAt(this.get('currentStopStep'));
       this.setProperties({
-        transitionStop: currentStop,
+        transitionStop: null,
         currentStop: null
       });
+      this.notifyPropertyChange('currentStopStep');
     }
   }).observes('started'),
 
@@ -58,33 +58,36 @@ export default Ember.Component.extend({
   ).observes('currentStopStep'),
 
   startTourStopTransition: (function(){
-    var transitionStop = this.get('transitionStop'),
-      previousStop = this.get('previousStop'),
-      targetRoute = transitionStop.get('targetRoute'),
-      router = this.container.lookup('router:main').router,
-      renderedProperty = 'lastRenderedTemplate',
-      targetElement = transitionStop.get('element'),
-      route;
+    var transitionStop = this.get('transitionStop');
 
-    var allRoutes = Ember.keys(router.recognizer.names);
-    var routeExists = allRoutes.indexOf(targetRoute) !== -1;
+    if(transitionStop) {
+      var previousStop = this.get('previousStop'),
+        targetRoute = transitionStop.get('targetRoute'),
+        router = this.container.lookup('router:main').router,
+        renderedProperty = 'lastRenderedTemplate',
+        targetElement = transitionStop.get('element'),
+        route;
 
-    if(routeExists){
-      route = this.container.lookup('route:' + targetRoute);
-    }
+      var allRoutes = Ember.keys(router.recognizer.names);
+      var routeExists = allRoutes.indexOf(targetRoute) !== -1;
 
-    var currentRouteDifferent = !previousStop || previousStop.get('targetRoute') !== targetRoute;
-    var routePresent = routeExists && route.get(renderedProperty);
+      if (routeExists) {
+        route = this.container.lookup('route:' + targetRoute);
+      }
 
-    if(routeExists && (!routePresent || currentRouteDifferent)){
-      route.transitionTo(targetRoute);
-      if(targetElement){
-        this.finishWhenElementInPage(targetElement);
+      var currentRouteDifferent = !previousStop || previousStop.get('targetRoute') !== targetRoute;
+      var routePresent = routeExists && route.get(renderedProperty);
+
+      if (routeExists && (!routePresent || currentRouteDifferent)) {
+        route.transitionTo(targetRoute);
+        if (targetElement) {
+          this.finishWhenElementInPage(targetElement);
+        } else {
+          this.finishTransition();
+        }
       } else {
         this.finishTransition();
       }
-    } else {
-      this.finishTransition();
     }
   }).observes('transitionStop'),
 
@@ -186,10 +189,18 @@ export default Ember.Component.extend({
     }
   },
 
+  exitTour: function(){
+    this.set('currentStopStep', 0);
+    this.set('started', false);
+    this.set('transitionStop.active', false);
+    this.set('currentStop.active', false);
+    this.set('previousStop', null);
+    this.sendAction('endTour');
+  },
+
   actions: {
-    exit: function(){
-      this.set('started', false);
-      this.sendAction('endTour');
+    exitTour: function(){
+      this.exitTour();
     },
 
     advance: function(){

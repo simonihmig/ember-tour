@@ -261,6 +261,12 @@ export default Ember.Component.extend({
         return 'top:50%;left:50%';
       }
     }
-  )
+  ),
+
+  actions: {
+    exitTour: function(){
+      this.get('parentView').exitTour();
+    }
+  }
 
 });
