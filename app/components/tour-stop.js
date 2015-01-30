@@ -48,7 +48,7 @@ export default Ember.Component.extend({
       }
     });
   }
-  ).observes('windowHeight', 'windowWidth', 'scrollTop', 'active'),
+  ).observes('windowHeight', 'windowWidth', 'scrollTop', 'active').on('didInsertElement'),
 
   tooltipOffset: null,
 
@@ -136,7 +136,7 @@ export default Ember.Component.extend({
       var tooltipOffset = this.get('tooltipOffset');
 
       // Take a clone of position precedence. These will be the available
-      var possiblePositions = ["bottom", "top", "right", "left"];
+      var possiblePositions = ["floating", "bottom", "top", "right", "left"];
       var windowHeight = this.get('windowHeight');
       var windowWidth = this.get('windowWidth');
       var targetOffset = this.get('targetOffset');
