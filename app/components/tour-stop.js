@@ -12,7 +12,7 @@ export default Ember.Component.extend({
 
   setActive: (function () {
     if (this.get('active')) {
-      this.set('tourHelperLayerCss', this.get('helperLayerCss'));
+      this.set('spotlightCSS', this.get('helperLayerCss'));
       this.get('targetElement').focus();
     }
   }

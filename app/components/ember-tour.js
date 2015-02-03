@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
-  tourHelperLayerCss: '',
+  spotlightCSS: '',
   started: false,
 
   startTour: (function(){
