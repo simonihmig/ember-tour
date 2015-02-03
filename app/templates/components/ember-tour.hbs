@@ -1,7 +1,7 @@
 <div {{bind-attr class=":introjs-overlay started"}}>
     <div class="introjs-helperLayer" {{bind-attr style=tourHelperLayerCss}}></div>
   {{#each tourStop in model.tourStops}}
-    {{#tour-stop model=tourStop tourHelperLayerCss=tourHelperLayerCss windowWidth=windowWidth windowHeight=windowHeight scrollTop=scrollTop}}
+    {{#tour-stop model=tourStop tourHelperLayerCss=tourHelperLayerCss windowWidth=windowWidth windowHeight=windowHeight scrollTop=scrollTop options=model.data}}
 
         <div class="row tour-buttons">
 

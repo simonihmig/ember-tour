@@ -102,7 +102,7 @@ export default Ember.Component.extend({
               // In this case, left would have fallen below the bottom of the screen.
               // Modify so that the bottom of the tooltip connects with the target
               css = "top:-" + (tooltipHeight - targetOffset.height - 20) + "px;";
-            } else if (this.get('showStepNumbers') === true) {
+            } else if (this.get('options.showStepNumbers') === true) {
               css = right + 'top:15px;';
             } else {
               css = right;
@@ -224,7 +224,7 @@ export default Ember.Component.extend({
         window.scrollBy(0, bottom + 100); // 70px + 30px padding from edge to look nice
       }
     }
-  }).observes('active', 'targetOffset'),
+  }).observes('active').on('init'),
 
   /**
    * @method inViewport
