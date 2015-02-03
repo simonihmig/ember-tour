@@ -5,8 +5,8 @@ export default Ember.Component.extend({
   active: Ember.computed.alias('model.active'),
   targetElement: Ember.computed('model.element', 'active',
     function(){
-      var elementName = this.get('model.element') || 'body';
-      return $(elementName)[0];
+      var elementName = this.get('model.element');
+      return $(elementName)[0] || $('body')[0];
     }
   ),
 
@@ -25,17 +25,26 @@ export default Ember.Component.extend({
    */
   targetOffset: Ember.computed('targetElement', 'windowHeight', 'windowWidth', 'scrollTop',
     function () {
-      var element = this.get('targetElement'),
+      var elt = this.get('targetElement'),
         position;
-      if(element){
-        position = element.getBoundingClientRect();
 
-        position.width = element.offsetWidth;
-        position.height = element.offsetHeight;
+      position = elt.getBoundingClientRect();
+
+      if(!(position.bottom + position.height + position.left + position.right + position.top + position.width > 0)){
+        position = $('body')[0].getBoundingClientRect();
       }
+
+      position.width = position.offsetWidth;
+      position.height = position.offsetHeight;
       return position || 0;
     }
   ),
+
+  /**
+   * Sets the tooltip position in relation to the target element.
+   *
+   * @function calculateTooltipOffset
+   */
 
   calculateTooltipOffset: (function(){
     Ember.run.scheduleOnce('afterRender', this, function(){

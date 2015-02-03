@@ -102,13 +102,6 @@ export default Ember.Component.extend({
     }
   },
 
-  viewInDom: function(route, property){
-    if(route.get(property)){
-      Ember.removeObserver(route, property, 'viewInDom');
-      this.finishTransition();
-    }
-  },
-
   finishTransition: function() {
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
