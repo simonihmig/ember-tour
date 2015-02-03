@@ -9,6 +9,7 @@ export default DS.Model.extend({
   showStepNumbers: DS.attr('boolean', {defaultValue: true}),
   keyboardNavigation: DS.attr('boolean', {defaultValue: true}),
   showButtons: DS.attr('boolean', {defaultValue: true}),
+  showNumber: DS.attr('boolean', {defaultValue: true}),
   showBullets: DS.attr('boolean', {defaultValue: true}),
   showProgress: DS.attr('boolean', {defaultValue: true}),
   scrollToElement: DS.attr('boolean', {defaultValue: true}),

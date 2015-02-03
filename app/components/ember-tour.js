@@ -27,6 +27,11 @@ export default Ember.Component.extend({
   ),
 
   currentStopStep: 0,
+
+  currentStopNumber: Ember.computed('currentStopStep', function(){
+    return this.get('currentStopNumber') + 1;
+  }),
+
   previousStopStep: null,
   previousStop: null,
   transitionStop: null,
@@ -206,6 +211,13 @@ export default Ember.Component.extend({
 
     goToStep: function(number){
       this.set('currentStopStep', number);
+    },
+
+    goToStop: function(id){
+      var sortedTourStops = this.get('sortedTourStops');
+      var tourStop = sortedTourStops.findBy('id', id);
+      var position = sortedTourStops.indexOf(tourStop);
+      this.set('currentStopStep', position)
     }
   }
 

@@ -48,7 +48,7 @@ export default Ember.Component.extend({
 
   calculateTooltipOffset: (function(){
     Ember.run.scheduleOnce('afterRender', this, function(){
-      var tooltip = this.$('.introjs-tooltip')[0];
+      var tooltip = this.$('.tour-tooltip')[0];
       if(tooltip){
         var offset = tooltip.getBoundingClientRect();
         offset.width = tooltip.offsetWidth;
