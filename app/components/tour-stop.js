@@ -21,9 +21,9 @@ export default Ember.Component.extend({
   /**
    * The target element's position on the page
    *
-   * @property targetOffset
+   * @property targetElementPosition
    */
-  targetOffset: Ember.computed('targetElement', 'windowHeight', 'windowWidth', 'scrollTop',
+  targetElementPosition: Ember.computed('targetElement', 'windowHeight', 'windowWidth', 'scrollTop',
     function () {
       var elt = this.get('targetElement'),
         position;
@@ -71,12 +71,12 @@ export default Ember.Component.extend({
    * @param {Object} arrowLayer
    */
 
-  tooltipCss: Ember.computed('calculatedPosition', 'targetOffset', 'tooltipLayer', 'active', 'tooltipOffset', 'scrollTop',
+  tooltipCss: Ember.computed('calculatedPosition', 'targetElementPosition', 'tooltipLayer', 'active', 'tooltipOffset', 'scrollTop',
     function () {
       var css="";
 
       var tooltipPosition = this.get('calculatedPosition');
-      var targetOffset = this.get('targetOffset');
+      var targetElementPosition = this.get('targetElementPosition');
       var windowHeight = this.get('windowHeight');
       var tooltipOffset = this.get('tooltipOffset');
 
@@ -87,21 +87,21 @@ export default Ember.Component.extend({
             css = 'left:' + '15px;' + 'top:-' + (tooltipHeight + 10) + 'px;';
             break;
           case 'right':
-            var left = 'left:' + (targetOffset.width + 20) + 'px;';
-            if (targetOffset.top + tooltipHeight > windowHeight) {
+            var left = 'left:' + (targetElementPosition.width + 20) + 'px;';
+            if (targetElementPosition.top + tooltipHeight > windowHeight) {
               // In this case, right would have fallen below the bottom of the screen.
               // Modify so that the bottom of the tooltip connects with the target
-              css = left + 'top:-' + (tooltipHeight - targetOffset.height - 20) + "px;";
+              css = left + 'top:-' + (tooltipHeight - targetElementPosition.height - 20) + "px;";
             } else {
               css = left;
             }
             break;
           case 'left':
-            var right = 'right:' + (targetOffset.width + 20) + 'px;';
-            if (targetOffset.top + tooltipHeight > windowHeight) {
+            var right = 'right:' + (targetElementPosition.width + 20) + 'px;';
+            if (targetElementPosition.top + tooltipHeight > windowHeight) {
               // In this case, left would have fallen below the bottom of the screen.
               // Modify so that the bottom of the tooltip connects with the target
-              css = "top:-" + (tooltipHeight - targetOffset.height - 20) + "px;";
+              css = "top:-" + (tooltipHeight - targetElementPosition.height - 20) + "px;";
             } else if (this.get('options.showStepNumbers') === true) {
               css = right + 'top:15px;';
             } else {
@@ -116,7 +116,7 @@ export default Ember.Component.extend({
             break;
           // Bottom going to follow the default behavior
           default:
-            css = 'bottom:-' + (tooltipOffset.height + 10) + 'px;left:' + (targetOffset.width / 2 - tooltipOffset.width / 2) + 'px;';
+            css = 'bottom:-' + (tooltipOffset.height + 10) + 'px;left:' + (targetElementPosition.width / 2 - tooltipOffset.width / 2) + 'px;';
             break;
         }
       }
@@ -139,7 +139,7 @@ export default Ember.Component.extend({
    * @param {Object} desiredTooltipPosition
    *
    */
-  calculatedPosition: Ember.computed('tooltipOffset', 'targetOffset', 'windowWidth', 'windowHeight', 'scrollTop',
+  calculatedPosition: Ember.computed('tooltipOffset', 'targetElementPosition', 'windowWidth', 'windowHeight', 'scrollTop',
     function () {
 
       var tooltipOffset = this.get('tooltipOffset');
@@ -148,7 +148,7 @@ export default Ember.Component.extend({
       var possiblePositions = ["floating", "bottom", "top", "right", "left"];
       var windowHeight = this.get('windowHeight');
       var windowWidth = this.get('windowWidth');
-      var targetOffset = this.get('targetOffset');
+      var targetElementPosition = this.get('targetElementPosition');
       var desiredTooltipPosition = this.get('model.position');
       var tooltipHeight, tooltipWidth;
 
@@ -167,27 +167,27 @@ export default Ember.Component.extend({
       // Check if the width of the tooltip + the starting point would spill off the right side of the screen
       // If no, neither bottom or top are valid
 
-      if (targetOffset.left + tooltipWidth > windowWidth || ((targetOffset.left + (targetOffset.width / 2)) - tooltipWidth) < 0) {
+      if (targetElementPosition.left + tooltipWidth > windowWidth || ((targetElementPosition.left + (targetElementPosition.width / 2)) - tooltipWidth) < 0) {
         possiblePositions.removeObjects(['bottom', 'top']);
       } else {
         // Check for space below
-        if ((targetOffset.height + targetOffset.top + tooltipHeight) > windowHeight) {
+        if ((targetElementPosition.height + targetElementPosition.top + tooltipHeight) > windowHeight) {
           possiblePositions.removeObject("bottom");
         }
 
         // Check for space above
-        if (targetOffset.top - tooltipHeight < 0) {
+        if (targetElementPosition.top - tooltipHeight < 0) {
           possiblePositions.removeObject('top');
         }
       }
 
       // Check for space to the right
-      if (targetOffset.width + targetOffset.left + tooltipWidth > windowWidth) {
+      if (targetElementPosition.width + targetElementPosition.left + tooltipWidth > windowWidth) {
         possiblePositions.removeObject("right");
       }
 
       // Check for space to the left
-      if (targetOffset.left - tooltipWidth < 0) {
+      if (targetElementPosition.left - tooltipWidth < 0) {
         possiblePositions.removeObject("left");
       }
 
@@ -208,7 +208,7 @@ export default Ember.Component.extend({
   ),
 
   scrollToElement: (function () {
-    var offset = this.get('targetOffset');
+    var offset = this.get('targetElementPosition');
 
     if (offset && this.get('active') && !this.get('inViewport') && this.get('options.scrollToElement') === true) {
       var winHeight = Ember.$(window).height(),
@@ -233,7 +233,7 @@ export default Ember.Component.extend({
 
   inViewport: Ember.computed('active',
     function() {
-      var offset = this.get('targetOffset');
+      var offset = this.get('targetElementPosition');
 
       return (
       offset.top >= 0 &&
@@ -251,9 +251,9 @@ export default Ember.Component.extend({
    * @method _setHelperLayerPosition
    * @param {Object} helperLayer
    */
-  helperLayerCss: Ember.computed('targetOffset', 'active',
+  helperLayerCss: Ember.computed('targetElementPosition', 'active',
     function(){
-      var elementPosition = this.get('targetOffset'),
+      var elementPosition = this.get('targetElementPosition'),
         widthHeightPadding = 10;
 
       if (this.get('model.position') === 'floating') {
