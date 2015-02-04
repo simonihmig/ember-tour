@@ -1,10 +1,10 @@
 <div {{bind-attr class="active :tour-stop" style=helperLayerCss}}>
-    <div {{bind-attr class=":tour-arrow top right bottom left"}}></div>
-    <div class="tour-tooltip" {{bind-attr style=tooltipCSS}}>
+    <div class="tour-tooltip" {{bind-attr style=tooltipCss}}>
         <a class="tour-end tour-corner-circle" {{action 'exitTour'}}>×</a>
         {{#if options.showNumber}}
           <span class="tour-number tour-corner-circle">{{{stepNumber}}}</span>
         {{/if}}
+        <div {{bind-attr class=":tour-arrow top right bottom left"}}></div>
         <div class="tour-body" {{bind-attr style=tourStopBodyCss}}>
             <div class="row">
                 <div class="col-sm-12">
