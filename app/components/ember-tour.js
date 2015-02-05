@@ -3,6 +3,8 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   spotlightCSS: '',
   started: false,
+  firstTourStep: 0,
+  currentStopStep: null,
 
   startTour: (function(){
     if(this.get('started')){
@@ -10,6 +12,9 @@ export default Ember.Component.extend({
         transitionStop: null,
         currentStop: null
       });
+      var startingStep = this.get('firstTourStep') || 0;
+
+      this.set('currentStopStep', startingStep);
       this.notifyPropertyChange('currentStopStep');
     }
   }).observes('started'),
@@ -25,8 +30,6 @@ export default Ember.Component.extend({
       return this.get('currentStopStep') > 0;
     }
   ),
-
-  currentStopStep: 0,
 
   currentStopNumber: Ember.computed('currentStopStep', function(){
     return this.get('currentStopNumber') + 1;
@@ -124,12 +127,6 @@ export default Ember.Component.extend({
   currentProgress: Ember.computed('tourStops', 'currentStep', function(){
     return ((this.get('currentStep') + 1) / this.get('tourStops.length')) * 100;
   }),
-  //
-  //renderStop: (function(){
-  //  var step = this.get('currentStopStep');
-  //  var currentStop = this.get('sortedTourStops').objectAt(step);
-  //
-  //}).observes('currentStopStep'),
 
   /**
    * Initializes a listener to set window height and width;
@@ -173,6 +170,7 @@ export default Ember.Component.extend({
       //left arrow
       this.send('rewind');
     } else if (e.keyCode === 39) {
+      alert('you did it!')
       //right arrow
       this.send('advance');
     } else if (e.keyCode === 13) {
@@ -188,7 +186,6 @@ export default Ember.Component.extend({
   },
 
   exitTour: function(){
-    this.set('currentStopStep', 0);
     this.set('started', false);
     this.set('transitionStop.active', false);
     this.set('currentStop.active', false);
@@ -217,7 +214,8 @@ export default Ember.Component.extend({
       var sortedTourStops = this.get('sortedTourStops');
       var tourStop = sortedTourStops.findBy('id', id);
       var position = sortedTourStops.indexOf(tourStop);
-      this.set('currentStopStep', position)
+      this.set('currentStopStep', position);
+      this.$().focus();
     }
   }
 
