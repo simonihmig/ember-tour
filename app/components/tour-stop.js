@@ -95,11 +95,11 @@ export default Ember.Component.extend({
   bottom: Ember.computed.equal('calculatedPosition','bottom'),
   top: Ember.computed.equal('calculatedPosition','top'),
 
-  centeredCSS: Ember.computed('',
+  centeredCSS: Ember.computed('targetElementPosition', 'tooltipOffset',
     function(){
       var targetElementPosition = this.get('targetElementPosition');
       var tooltipOffset = this.get('tooltipOffset');
-      (targetElementPosition.width / 2 - tooltipOffset.width / 2)
+      return 'left:' + (targetElementPosition.width / 2 - tooltipOffset.width / 2) + 'px;';
     }
   ),
 
@@ -114,12 +114,12 @@ export default Ember.Component.extend({
 
   bottomCSS: Ember.computed('tooltipOffset', function(){
     var tooltipHeight = this.get('tooltipOffset.height');
-    return 'bottom:-' + (tooltipHeight + 10) + 'px;left:' + this.get('centeredCSS') + 'px;';
+    return this.get('centeredCSS') + 'bottom:-' + (tooltipHeight + 10) + 'px;'
   }),
 
   topCSS: Ember.computed('tooltipOffset', function(){
     var tooltipHeight = this.get('tooltipOffset.height');
-    return 'left:' + '15px;' + 'top:-' + (tooltipHeight + 10) + 'px;left:' + this.get('centeredCSS') + 'px;';
+    return this.get('centeredCSS') + 'top:-' + (tooltipHeight + 10) + 'px;';
   }),
 
   rightCSS: Ember.computed('targetElementPosition', 'tooltipOffset', 'windowHeight',
