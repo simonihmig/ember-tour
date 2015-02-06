@@ -184,29 +184,6 @@ export default Ember.Component.extend({
     }
   }).observes('started').on('init'),
 
-  keyDown: function(e) {
-    if (e.keyCode === 27 && this.get('exitOnEsc') === true) {
-      //escape key pressed, exit the intro
-      this.send('exit');
-    } else if (e.keyCode === 37) {
-      //left arrow
-      this.send('rewind');
-    } else if (e.keyCode === 39) {
-      alert('you did it!')
-      //right arrow
-      this.send('advance');
-    } else if (e.keyCode === 13) {
-      //default behavior for responding to enter
-      this.send('advance');
-      //prevent default behaviour on hitting Enter, to prevent steps being skipped in some browsers
-      if (e.preventDefault) {
-        e.preventDefault();
-      } else {
-        e.returnValue = false;
-      }
-    }
-  },
-
   exitTour: function(){
     this.set('started', false);
     this.set('transitionStop.active', false);
@@ -237,7 +214,6 @@ export default Ember.Component.extend({
       var tourStop = sortedTourStops.findBy('id', id);
       var position = sortedTourStops.indexOf(tourStop);
       this.set('currentStopStep', position);
-      this.$().focus();
     }
   }
 
