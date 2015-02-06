@@ -45,13 +45,13 @@ export default Ember.Component.extend({
   tourStops: Ember.computed.alias('model.tourStops'),
   currentPath: Ember.computed.alias('parentView.controller.currentPath'),
 
-  routeChange: (function(){
+  _routeChange: (function(){
     if(this.get('currentStop') && this.get('started')) {
-      Ember.run.scheduleOnce('afterRender', this, this.checkForUserInitiatedTransition);
+      Ember.run.scheduleOnce('afterRender', this, this._checkForUserInitiatedTransition);
     }
   }).observes('currentPath'),
 
-  checkForUserInitiatedTransition: (function(){
+  _checkForUserInitiatedTransition: (function(){
     var transitioning = this.get('transitioning');
     var element = this.get('currentStop.element');
     var elementOnPage = $(element);
@@ -69,14 +69,14 @@ export default Ember.Component.extend({
     }
   ),
 
-  setTransitionStop: (function(){
+  _setTransitionStop: (function(){
     var step = this.get('currentStopStep');
     var transitionStop = this.get('sortedTourStops').objectAt(step);
     this.set('transitionStop', transitionStop);
   }
   ).observes('currentStopStep'),
 
-  startTourStopTransition: (function(){
+  _startTourStopTransition: (function(){
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
 
@@ -107,33 +107,33 @@ export default Ember.Component.extend({
       if (routeExists && (!routePresent || currentRouteDifferent)) {
         route.transitionTo(targetRoute);
         if (targetElement) {
-          this.finishWhenElementInPage(targetElement);
+          this._finishWhenElementInPage(targetElement);
         } else {
-          this.finishTransition();
+          this._finishTransition();
         }
       } else {
-        this.finishTransition();
+        this._finishTransition();
       }
     }
   }).observes('transitionStop'),
 
-  finishWhenElementInPage: function(element, waitTime) {
+  _finishWhenElementInPage: function(element, waitTime) {
     var component = this;
     if(!(typeof waitTime === "number")){
       waitTime = 5000
     }
     if(!Ember.isBlank($(element))){
-      this.finishTransition();
+      this._finishTransition();
     } else if(waitTime > 0) {
       Ember.run.later(function () {
-        component.finishWhenElementInPage(element, waitTime - 20);
+        component._finishWhenElementInPage(element, waitTime - 20);
       },20);
     } else {
       this.incrementProperty('currentStopStep');
     }
   },
 
-  finishTransition: function() {
+  _finishTransition: function() {
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
 
