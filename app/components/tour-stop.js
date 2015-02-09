@@ -10,10 +10,9 @@ export default Ember.Component.extend({
     }
   ),
 
-  setActive: (function () {
+  _setSpotlightCSS: (function () {
     if (this.get('active')) {
       this.set('spotlightCSS', this.get('helperLayerCss'));
-      this.get('targetElement').focus();
     }
   }
   ).observes('active','helperLayerCss', 'targetElement'),
@@ -39,10 +38,10 @@ export default Ember.Component.extend({
   /**
    * Sets the tooltip position in relation to the target element.
    *
-   * @function calculateTooltipOffset
+   * @function _calculateTooltipOffset
    */
 
-  calculateTooltipOffset: (function(){
+  _calculateTooltipOffset: (function(){
     Ember.run.scheduleOnce('afterRender', this, function(){
       var tooltip = this.$('.tour-tooltip')[0],
         offset;
@@ -207,7 +206,7 @@ export default Ember.Component.extend({
     }
   ),
 
-  scrollToElement: (function () {
+  _scrollToElement: (function () {
     var offset = this.get('targetElementPosition');
 
     if (offset && this.get('active') && !this.get('inViewport') && this.get('options.scrollToElement') === true) {
