@@ -3,6 +3,9 @@ import Ember from 'ember';
 export default Ember.Component.extend({
   spotlightCSS: '',
   started: false,
+  firstTourStep: 0,
+  currentStopStep: null,
+  transitioning: false,
 
   startTour: (function(){
     if(this.get('started')){
@@ -10,6 +13,9 @@ export default Ember.Component.extend({
         transitionStop: null,
         currentStop: null
       });
+      var startingStep = this.get('firstTourStep') || 0;
+
+      this.set('currentStopStep', startingStep);
       this.notifyPropertyChange('currentStopStep');
     }
   }).observes('started'),
@@ -26,8 +32,6 @@ export default Ember.Component.extend({
     }
   ),
 
-  currentStopStep: 0,
-
   currentStopNumber: Ember.computed('currentStopStep', function(){
     return this.get('currentStopNumber') + 1;
   }),
@@ -35,16 +39,26 @@ export default Ember.Component.extend({
   previousStopStep: null,
   previousStop: null,
   transitionStop: null,
-
-  onBeforeChange: function(){},
-  onChange: function(){},
-  onComplete: function(){},
-  onExit: function(){},
-  onAfterChange: function(){},
   windowWidth: null,
   windowHeight: null,
 
   tourStops: Ember.computed.alias('model.tourStops'),
+  currentPath: Ember.computed.alias('parentView.controller.currentPath'),
+
+  routeChange: (function(){
+    if(this.get('currentStop') && this.get('started')) {
+      Ember.run.scheduleOnce('afterRender', this, this.checkForUserInitiatedTransition);
+    }
+  }).observes('currentPath'),
+
+  checkForUserInitiatedTransition: (function(){
+    var transitioning = this.get('transitioning');
+    var element = this.get('currentStop.element');
+    var elementOnPage = $(element);
+    if (!transitioning && Ember.isBlank(elementOnPage)) {
+      this.exitTour();
+    }
+  }),
 
   sortedTourStops: Ember.computed('model',
     function(){
@@ -63,9 +77,16 @@ export default Ember.Component.extend({
   ).observes('currentStopStep'),
 
   startTourStopTransition: (function(){
-    var transitionStop = this.get('transitionStop');
+    var transitionStop = this.get('transitionStop'),
+      currentStop = this.get('currentStop');
+
+    if(currentStop){
+      currentStop.set('active', false);
+    }
 
     if(transitionStop) {
+      this.set('transitioning', true);
+
       var previousStop = this.get('previousStop'),
         targetRoute = transitionStop.get('targetRoute'),
         router = this.container.lookup('router:main').router,
@@ -96,14 +117,19 @@ export default Ember.Component.extend({
     }
   }).observes('transitionStop'),
 
-  finishWhenElementInPage: function(element) {
+  finishWhenElementInPage: function(element, waitTime) {
     var component = this;
+    if(!(typeof waitTime === "number")){
+      waitTime = 5000
+    }
     if(!Ember.isBlank($(element))){
       this.finishTransition();
-    } else {
+    } else if(waitTime > 0) {
       Ember.run.later(function () {
-        component.finishWhenElementInPage(element);
+        component.finishWhenElementInPage(element, waitTime - 20);
       },20);
+    } else {
+      this.incrementProperty('currentStopStep');
     }
   },
 
@@ -112,24 +138,17 @@ export default Ember.Component.extend({
       currentStop = this.get('currentStop');
 
     transitionStop.set('active', true);
-    if(currentStop){
-      currentStop.set('active', false);
-    }
     this.setProperties({
       currentStop: transitionStop,
       previousStop: currentStop
     });
+
+    Ember.run.scheduleOnce('afterRender', this, function(){this.set('transitioning', false)});
   },
 
   currentProgress: Ember.computed('tourStops', 'currentStep', function(){
     return ((this.get('currentStep') + 1) / this.get('tourStops.length')) * 100;
   }),
-  //
-  //renderStop: (function(){
-  //  var step = this.get('currentStopStep');
-  //  var currentStop = this.get('sortedTourStops').objectAt(step);
-  //
-  //}).observes('currentStopStep'),
 
   /**
    * Initializes a listener to set window height and width;
@@ -165,30 +184,7 @@ export default Ember.Component.extend({
     }
   }).observes('started').on('init'),
 
-  keyDown: function(e) {
-    if (e.keyCode === 27 && this.get('exitOnEsc') === true) {
-      //escape key pressed, exit the intro
-      this.send('exit');
-    } else if (e.keyCode === 37) {
-      //left arrow
-      this.send('rewind');
-    } else if (e.keyCode === 39) {
-      //right arrow
-      this.send('advance');
-    } else if (e.keyCode === 13) {
-      //default behavior for responding to enter
-      this.send('advance');
-      //prevent default behaviour on hitting Enter, to prevent steps being skipped in some browsers
-      if (e.preventDefault) {
-        e.preventDefault();
-      } else {
-        e.returnValue = false;
-      }
-    }
-  },
-
   exitTour: function(){
-    this.set('currentStopStep', 0);
     this.set('started', false);
     this.set('transitionStop.active', false);
     this.set('currentStop.active', false);
@@ -217,7 +213,7 @@ export default Ember.Component.extend({
       var sortedTourStops = this.get('sortedTourStops');
       var tourStop = sortedTourStops.findBy('id', id);
       var position = sortedTourStops.indexOf(tourStop);
-      this.set('currentStopStep', position)
+      this.set('currentStopStep', position);
     }
   }
 
