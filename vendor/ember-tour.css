@@ -1,4 +1,6 @@
 .ember-tour {
+  width: 0;
+  height: 0;
   position: fixed;
   display: none;
   z-index: 1050; }
