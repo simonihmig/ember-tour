@@ -1,5 +1,5 @@
 <div {{bind-attr class=":ember-tour started"}}>
-    <div {{bind-attr style=spotlightCSS class="spotlight"}}></div>
+    <div {{bind-attr style=spotlightCSS class=":target spotlight"}}></div>
   {{#each tourStop in model.tourStops}}
     {{#tour-stop model=tourStop spotlightCSS=spotlightCSS windowWidth=windowWidth windowHeight=windowHeight scrollTop=scrollTop options=model.data}}
         <div {{bind-attr class=":tour-bullets showBullets"}}>
