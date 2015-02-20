@@ -1,13 +1,117 @@
 import Ember from 'ember';
 
 export default Ember.Component.extend({
+
+  /**
+   The CSS properties for the 'spotlight' element over the current target element
+
+   @property spotlightCSS
+   @type String
+   */
+
   spotlightCSS: '',
+
+  /**
+   Set to true if the tour is running
+
+   @property started
+   @type Boolean
+   @default false
+   */
+
   started: false,
+
+  /**
+   The point at which the tour will start
+
+   @property firstTourStep
+   @type Integer
+   @default 0
+   */
+
   firstTourStep: 0,
+
+  /**
+   The number of the active stop stop
+
+   @property currentStopStep
+   @type Integer
+   @default null
+   */
+
   currentStopStep: null,
+
+  /**
+   Set to true if the tour is between stops
+
+   @property transitioning
+   @type Integer
+   @default false
+   */
+
   transitioning: false,
 
-  startTour: (function(){
+  /**
+   The previous tour stop
+
+   @property previousStop
+   @type previousStop
+   @default null
+   */
+
+  previousStop: null,
+
+  /**
+   When in transition, the stop to which the tour is transitioning
+
+   @property transitionStop
+   @type Object
+   @default null
+   */
+
+  transitionStop: null,
+
+  /**
+   The height of the window
+
+   @property windowHeight
+   @type Integer
+   */
+
+  windowHeight: null,
+
+  /**
+   The width of the window
+
+   @property windowWidth
+   @type Integer
+   */
+
+  windowWidth: null,
+
+  /**
+   @property tourStops
+   @type Object
+   */
+
+  tourStops: Ember.computed.alias('model.tourStops'),
+
+  /**
+   The Ember currentPath
+
+   @property currentPath
+   @type String
+   */
+
+  currentPath: Ember.computed.alias('parentView.controller.currentPath'),
+
+  /**
+   Starts the tour when `started` is changed to true
+   @private
+   @method _startTour
+   */
+
+  _startTour: (function(){
     if(this.get('started')){
       this.setProperties({
         transitionStop: null,
@@ -20,11 +124,25 @@ export default Ember.Component.extend({
     }
   }).observes('started'),
 
+  /**
+   Set to true if there are stops after the `currentStop` in `tourStops`
+
+   @property moreForwardSteps
+   @type Boolean
+   */
+
   moreForwardSteps: Ember.computed('currentStopStep', 'sortedTourStops',
     function(){
       return this.get('currentStopStep') + 1 < this.get('sortedTourStops.length');
     }
   ),
+
+  /**
+   Set to true if there are stops before the `currentStop` in `tourStops`
+
+   @property moreBackwardStops
+   @type Boolean
+   */
 
   moreBackwardSteps: Ember.computed('currentStopStep',
     function(){
@@ -32,26 +150,27 @@ export default Ember.Component.extend({
     }
   ),
 
-  currentStopNumber: Ember.computed('currentStopStep', function(){
-    return this.get('currentStopNumber') + 1;
-  }),
+  /**
+   When the current path changes, call a check to see if the user changed the path
 
-  previousStopStep: null,
-  previousStop: null,
-  transitionStop: null,
-  windowWidth: null,
-  windowHeight: null,
+   @method pathChange
+   */
 
-  tourStops: Ember.computed.alias('model.tourStops'),
-  currentPath: Ember.computed.alias('parentView.controller.currentPath'),
-
-  _routeChange: (function(){
+  pathChange: (function(){
     if(this.get('currentStop') && this.get('started')) {
       Ember.run.scheduleOnce('afterRender', this, this._checkForUserInitiatedTransition);
     }
   }).observes('currentPath'),
 
-  _checkForUserInitiatedTransition: (function(){
+
+  /**
+   Exits the tour if the user initiated a route change, instead of the tour. Checks to see
+   if the target element is still in the page after the transition; if not the tour ends.
+
+   @method checkForUserInitiatedTransition
+   */
+
+  checkForUserInitiatedTransition: (function(){
     var transitioning = this.get('transitioning');
     var element = this.get('currentStop.element');
     var elementOnPage = $(element);
@@ -60,20 +179,34 @@ export default Ember.Component.extend({
     }
   }),
 
-  sortedTourStops: Ember.computed('model',
+  /**
+   The tour's stops, sorted by the step number
+
+   @property sortedTourStops
+   @type Object
+   */
+
+  sortedTourStops: Ember.computed('tourStops',
     function(){
-      var model = this.get('model');
-      if(model && model.get('tourStops')){
-        return model.get('tourStops').sortBy('step');
+      var tourStops = this.get('tourStops');
+      if(tourStops && tourStops.get('length')){
+        return tourStops.sortBy('step');
       }
     }
   ),
 
+  /**
+   When the `currentStopStep` changes, the transitionStop is set to the object at that position.
+
+   @private
+   @method _setTransitionStop
+   */
+
   _setTransitionStop: (function(){
-    var step = this.get('currentStopStep');
-    var transitionStop = this.get('sortedTourStops').objectAt(step);
-    this.set('transitionStop', transitionStop);
-  }
+      var step = this.get('currentStopStep');
+      var transitionStop = this.get('sortedTourStops').objectAt(step);
+      this.set('transitionStop', transitionStop);
+    }
   ).observes('currentStopStep'),
 
   _startTourStopTransition: (function(){
@@ -151,10 +284,10 @@ export default Ember.Component.extend({
   }),
 
   /**
-   * Initializes a listener to set window height and width;
-   *
-   * @api private
-   * @method _getWinSize
+   Initializes a listener to track window height and width;
+
+   @private
+   @method _windowSize
    */
 
   _windowSize: (function(){
