@@ -209,6 +209,13 @@ export default Ember.Component.extend({
     }
   ).observes('currentStopStep'),
 
+  /**
+   Observes when the transitonStop changes, and initiates the transition to that stop.
+
+   @private
+   @method _startTourStopTransition
+   */
+
   _startTourStopTransition: (function(){
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
@@ -250,6 +257,15 @@ export default Ember.Component.extend({
     }
   }).observes('transitionStop'),
 
+  /**
+   Waits for the target element to render before finishing the transition. If it times out, it initiates
+   the transition to the next stop.
+
+   @private
+   @param element {Object} the target element
+   @param waitTime {Integer} the length of time before timing out
+   */
+
   _finishWhenElementInPage: function(element, waitTime) {
     var component = this;
     if(!(typeof waitTime === "number")){
@@ -266,6 +282,14 @@ export default Ember.Component.extend({
     }
   },
 
+  /**
+   Moves the `currentStop` to `previousStop`, and the `transitionStop` to the `currentStop`.
+   Also activates the (soon to be) `currentStop`
+
+   @private
+   @method _finishTransition
+   */
+
   _finishTransition: function() {
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
@@ -279,12 +303,8 @@ export default Ember.Component.extend({
     Ember.run.scheduleOnce('afterRender', this, function(){this.set('transitioning', false)});
   },
 
-  currentProgress: Ember.computed('tourStops', 'currentStep', function(){
-    return ((this.get('currentStep') + 1) / this.get('tourStops.length')) * 100;
-  }),
-
   /**
-   Initializes a listener to track window height and width;
+   Initializes a listener to track window height and width
 
    @private
    @method _windowSize
@@ -317,6 +337,12 @@ export default Ember.Component.extend({
     }
   }).observes('started').on('init'),
 
+  /**
+   Deactivates the tour and sends action `endTour`
+
+   @method exitTour
+   */
+
   exitTour: function(){
     this.set('started', false);
     this.set('transitionStop.active', false);
@@ -326,21 +352,51 @@ export default Ember.Component.extend({
   },
 
   actions: {
+    /**
+     Exits the tour
+
+     @method exitTour
+     */
+
     exitTour: function(){
       this.exitTour();
     },
+
+    /**
+     Move forward by 1
+
+     @method advance
+     */
 
     advance: function(){
       this.incrementProperty('currentStopStep', 1);
     },
 
+    /**
+     Move back by 1
+
+     @method reverse
+     */
+
     reverse: function(){
       this.decrementProperty('currentStopStep', 1);
     },
 
+    /**
+     Go to a specific stop number in the tour
+     @method goToStep
+     @param number {Integer} the position of the stop
+     */
+
     goToStep: function(number){
       this.set('currentStopStep', number);
     },
+
+    /**
+     Go to a stop by id
+     @method goToStop
+     @param id
+     */
 
     goToStop: function(id){
       var sortedTourStops = this.get('sortedTourStops');
