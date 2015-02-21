@@ -2,7 +2,23 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
 
+  /**
+   Set to true if the tour stop is in use
+
+   @property active
+   @type Boolean
+   @default false
+   */
+
   active: Ember.computed.alias('model.active'),
+
+  /**
+   The DOM element that this stop points at.
+
+   @property targetElement
+   @type Object
+   */
+
   targetElement: Ember.computed('model.element', 'active',
     function(){
       var elementName = this.get('model.element');
@@ -10,18 +26,23 @@ export default Ember.Component.extend({
     }
   ),
 
-  _setSpotlightCSS: (function () {
-    if (this.get('active')) {
-      this.set('spotlightCSS', this.get('helperLayerCss'));
-    }
-  }
-  ).observes('active','helperLayerCss', 'targetElement'),
-
   /**
-   * The target element's position on the page
-   *
-   * @property targetElementPosition
+   The target element's position on the page
+   ```
+   {
+     top: xx,
+     bottom: xx,
+     left: xx,
+     right: xx,
+     height: xx,
+     width: xx
+   }
+   ```
+
+   @property targetElementPosition
+   @type Object
    */
+
   targetElementPosition: Ember.computed('targetElement', 'windowHeight', 'windowWidth', 'scrollTop',
     function () {
       var elt = this.get('targetElement');
@@ -36,9 +57,10 @@ export default Ember.Component.extend({
   ),
 
   /**
-   * Sets the tooltip position in relation to the target element.
-   *
-   * @function _calculateTooltipOffset
+   Sets the tooltip position in relation to the target element.
+
+   @private
+   @function _calculateTooltipOffset
    */
 
   _calculateTooltipOffset: (function(){
@@ -55,10 +77,35 @@ export default Ember.Component.extend({
       }
       this.set('tooltipOffset', offset);
     });
-  }
-  ).observes('windowHeight', 'windowWidth', 'scrollTop', 'active').on('didInsertElement'),
+  }).observes('windowHeight', 'windowWidth', 'scrollTop', 'active').on('didInsertElement'),
+
+  /**
+   The offset of the tooltip from its container. It equals the target element width and height,
+   unless the tooltip will float on the page.
+
+   ```
+   {
+     top: xx,
+     bottom: xx,
+     left: xx,
+     right: xx,
+     height: xx,
+     width: xx
+   }
+   ```
+
+   @property tooltipOffset
+   @type Object
+   */
 
   tooltipOffset: {},
+
+  /**
+   The css that will be applied to the tooltip box, depending on its position relative to the target element
+
+   @property tooltipCSS
+   @type String
+   */
 
   tooltipCSS: Ember.computed('calculatedPosition',
     function(){
@@ -66,6 +113,15 @@ export default Ember.Component.extend({
       return this.get(position + 'CSS')
     }
   ),
+
+  /**
+   Depending on the 'headroom', the position where the tooltip will be shown. It will use the specified
+   position if available. If not, it cycles through the other available positions, using 'floating' if
+   nothing else is available.
+
+   @property calculatedPosition
+   @type String
+   */
 
   calculatedPosition: Ember.computed('model.position', 'topAvailable', 'bottomAvailable', 'leftAvailable', 'rightAvailable',
     function(){
@@ -89,10 +145,44 @@ export default Ember.Component.extend({
     }
   ),
 
+  /**
+   Set to true if the `calculatedPosition` is 'right'
+   @property right
+   @type Boolean
+   */
+
   right: Ember.computed.equal('calculatedPosition','right'),
+
+  /**
+   Set to true if the `calculatedPosition` is 'left'
+   @property left
+   @type Boolean
+   */
+
   left: Ember.computed.equal('calculatedPosition','left'),
+
+  /**
+   Set to true if the `calculatedPosition` is 'bottom'
+   @property bottom
+   @type Boolean
+   */
+
   bottom: Ember.computed.equal('calculatedPosition','bottom'),
+
+  /**
+   Set to true if the `calculatedPosition` is 'top'
+   @property top
+   @type Boolean
+   */
+
   top: Ember.computed.equal('calculatedPosition','top'),
+
+  /**
+   CSS to horizontally center the popover on the target element.
+
+   @property centeredCSS
+   @type String
+   */
 
   centeredCSS: Ember.computed('targetElementPosition', 'tooltipOffset',
     function(){
@@ -102,6 +192,12 @@ export default Ember.Component.extend({
     }
   ),
 
+  /**
+   CSS to float the tooltip in the center of the page
+
+   @property floatingCSS
+   @type String
+   */
 
   floatingCSS: Ember.computed('tooltipOffset',
     function(){
@@ -111,15 +207,36 @@ export default Ember.Component.extend({
     }
   ),
 
+  /**
+   Tooltip CSS to use if `calculatedPosition` is `'bottom'`
+
+   @property bottomCSS
+   @type String
+   */
+
   bottomCSS: Ember.computed('tooltipOffset', function(){
     var tooltipHeight = this.get('tooltipOffset.height');
     return this.get('centeredCSS') + 'bottom:-' + (tooltipHeight + 10) + 'px;'
   }),
 
+  /**
+   Tooltip CSS to use if `calculatedPosition` is `'top'`
+
+   @property topCSS
+   @type String
+   */
+
   topCSS: Ember.computed('tooltipOffset', function(){
     var tooltipHeight = this.get('tooltipOffset.height');
     return this.get('centeredCSS') + 'top:-' + (tooltipHeight + 10) + 'px;';
   }),
+
+  /**
+   Tooltip CSS to use if 'calculatedPosition' is 'right'
+
+   @property rightCSS
+   @type String
+   */
 
   rightCSS: Ember.computed('targetElementPosition', 'tooltipOffset', 'windowHeight',
     function(){
@@ -136,6 +253,13 @@ export default Ember.Component.extend({
       }
     }
   ),
+
+  /**
+   Tooltip CSS to use if `calculatedPosition` is `'left'`
+
+   @property leftCSS
+   @type String
+   */
 
   leftCSS: Ember.computed('targetElementPosition', 'tooltipOffset', 'windowHeight',
     function(){
@@ -154,6 +278,15 @@ export default Ember.Component.extend({
     }
   ),
 
+  /**
+   The top of the tooltip that is either
+     - top of tooltip even with bottom of target element
+     - bottom of tooltip even with bottom of target element
+
+   @property respondingTop
+   @type String
+   */
+
   respondingTop: Ember.computed('targetElementPosition', 'tootipOffset', 'windowHeight',
     function(){
       var targetElementPosition = this.get('targetElementPosition');
@@ -168,9 +301,12 @@ export default Ember.Component.extend({
     }
   ),
 
-  positionAvailaible: function(position){
-    return this.get(position + 'Available');
-  },
+  /**
+   Set to true if 'top' is an available position for the tooltip
+
+   @property topAvailable
+   @type Boolean
+   */
 
   topAvailable: Ember.computed('tooltipOffset', 'targetElementPosition',
     function(){
@@ -179,6 +315,13 @@ export default Ember.Component.extend({
       return targetElementPosition.top > tooltipOffset.height;
     }
   ),
+
+  /**
+   Set to true if 'bottom' is an available position for the tooltip
+
+   @property bottomAvailable
+   @type Boolean
+   */
 
   bottomAvailable: Ember.computed('tooltipOffset', 'targetElementPosition', 'windowHeight',
     function(){
@@ -189,6 +332,13 @@ export default Ember.Component.extend({
     }
   ),
 
+  /**
+   Set to true if 'left' is an available position for the tooltip
+
+   @property leftAvailable
+   @type Boolean
+   */
+
   leftAvailable: Ember.computed('tooltipOffset', 'targetElementPosition',
     function(){
       var targetElementPosition = this.get('targetElementPosition');
@@ -196,6 +346,13 @@ export default Ember.Component.extend({
       return targetElementPosition.left > tooltipOffset.width;
     }
   ),
+
+  /**
+   Set to true if 'right' is an available position for the tooltip
+
+   @property rightAvailable
+   @type Boolean
+   */
 
   rightAvailable: Ember.computed('tooltipOffset', 'targetElementPosition', 'windowWidth',
     function(){
@@ -206,7 +363,27 @@ export default Ember.Component.extend({
     }
   ),
 
-  _scrollToElement: (function () {
+  /**
+   Sets the Ember Tour's spotlight css to be the same as this stop's CSS
+
+   @function _setSpotlightCSS
+   @private
+   */
+
+  _setSpotlightCSS: (function () {
+    if (this.get('active')) {
+      this.set('spotlightCSS', this.get('targetOutlineCss'));
+    }
+  }
+  ).observes('active','targetOutlineCss', 'targetElement'),
+
+  /**
+   Scrolls to the target element if it is out of the viewport
+
+   @method scrollToElement
+   */
+
+  scrollToElement: (function () {
     var offset = this.get('targetElementPosition');
 
     if (offset && this.get('active') && !this.get('inViewport') && this.get('options.scrollToElement') === true) {
@@ -226,8 +403,10 @@ export default Ember.Component.extend({
   }).observes('active').on('init'),
 
   /**
-   * @method inViewport
-   * @param {Object} el
+   Set to true if target element is within the window
+
+   @property inViewport
+   @type Boolean
    */
 
   inViewport: Ember.computed('active',
@@ -244,13 +423,14 @@ export default Ember.Component.extend({
   ),
 
   /**
-   * Update the position of the helper layer on the screen
-   *
-   * @api private
-   * @method _setHelperLayerPosition
-   * @param {Object} helperLayer
+   The box bounding the position of the target element. Returns css with adjustments for padding, or
+   'top:50%;left:50%' if the tooltip will be cnetered on the page
+
+   @property targetOutlineCss
+   @type String
    */
-  helperLayerCss: Ember.computed('targetElementPosition', 'active',
+
+  targetOutlineCss: Ember.computed('targetElementPosition', 'active',
     function(){
       var elementPosition = this.get('targetElementPosition'),
         widthHeightPadding = 10;
@@ -263,8 +443,8 @@ export default Ember.Component.extend({
       if(elementPosition) {
         return 'width: ' + (elementPosition.width + widthHeightPadding) + 'px; ' +
           'height:' + (elementPosition.height + widthHeightPadding) + 'px; ' +
-          'top:' + (elementPosition.top - 5) + 'px;' +
-          'left: ' + (elementPosition.left - 5) + 'px;';
+          'top:' + (elementPosition.top - widthHeightPadding / 2) + 'px;' +
+          'left: ' + (elementPosition.left - widthHeightPadding / 2) + 'px;';
       } else {
         return 'top:50%;left:50%';
       }
@@ -272,6 +452,12 @@ export default Ember.Component.extend({
   ),
 
   actions: {
+    /**
+     Calls `exitTour` on the parent
+
+     @method exitTour
+     */
+
     exitTour: function(){
       this.get('parentView').exitTour();
     }
