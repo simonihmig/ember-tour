@@ -2,7 +2,7 @@
     <div {{bind-attr class=":tour-arrow top right bottom left"}}></div>
     <div class="tour-tooltip" {{bind-attr style=tooltipCSS}}>
         <a class="tour-end tour-corner-circle" {{action 'exitTour'}}>×</a>
-        {{#if options.showNumber}}
+        {{#if options.showStepNumbers}}
           <span class="tour-number tour-corner-circle">{{{stepNumber}}}</span>
         {{/if}}
         <div class="tour-body" {{bind-attr style=tourStopBodyCss}}>
