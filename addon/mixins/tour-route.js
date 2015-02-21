@@ -1,6 +1,22 @@
 import Ember from 'ember';
 
 export default Ember.Mixin.create({
+  findRouteTourInTours: function(tours, route) {
+    var controller = this.controllerFor("application");
+    var searchedRoute = route || controller.get('currentRouteName');
+    var tour = tours.findBy('name', searchedRoute);
+    if (Ember.isBlank(tour)) {
+      var nextRoute = searchedRoute.split('.').slice(0, -1).join('.');
+      if (Ember.isBlank(nextRoute)) {
+        return null;
+      } else {
+        return this.findRouteTourInTours(tours, nextRoute);
+      }
+    } else {
+      return tour;
+    }
+  },
+
   _actions: {
     startTour: function(name, startingStep) {
       var route = this;
