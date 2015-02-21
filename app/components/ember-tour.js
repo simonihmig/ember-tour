@@ -106,6 +106,24 @@ export default Ember.Component.extend({
   currentPath: Ember.computed.alias('parentView.controller.currentPath'),
 
   /**
+   Set to true when the tour has been started.
+
+   @property started
+   @type Boolean
+   */
+
+  started: Ember.computed.alias('parentView.controller.tourStarted'),
+
+  /**
+   The model of the tour
+
+   @property model
+   @type Object
+   */
+
+  model: Ember.computed.alias('parentView.controller.tour'),
+
+  /**
    Starts the tour when `started` is changed to true
    @private
    @method _startTour
