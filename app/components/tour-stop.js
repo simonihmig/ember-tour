@@ -424,7 +424,7 @@ export default Ember.Component.extend({
 
   /**
    The box bounding the position of the target element. Returns css with adjustments for padding, or
-   'top:50%;left:50%' if the tooltip will be cnetered on the page
+   'top:50%;left:50%' if the tooltip will be centered on the page
 
    @property targetOutlineCss
    @type String
