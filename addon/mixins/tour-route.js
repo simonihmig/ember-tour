@@ -22,14 +22,14 @@ export default Ember.Mixin.create({
       var route = this;
       var controller = this.controllerFor("application");
       var firstTourStep = startingStep || 0;
-      var tourName = name || controller.get('activeContextTour') || 'first_tour';
+      var tourName = name || controller.get('activeContextTour') || 'application';
 
       this.store.find('tour').then(function(tours) {
         var tour;
         if (tourName) {
           tour = tours.findBy('name', tourName);
         } else {
-          tour = route.findRouteTourInTours(tours) || tours.findBy('name', 'first_tour');
+          tour = route.findRouteTourInTours(tours) || tours.findBy('name', 'application');
         }
         if (!Ember.isBlank(tour)) {
           return controller.setProperties({
