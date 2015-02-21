@@ -1,6 +1,6 @@
 # Ember Tour
 
-Ember tour is an addons for site tours. You can set default tours, trigger tours from controllers, move between routes 
+Ember tour is an addon for site tours. You can set default tours, trigger tours from controllers, move between routes 
 without leaving the tour, and load tours from a server.
 
 ## Getting started
