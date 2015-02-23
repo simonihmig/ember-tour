@@ -12,16 +12,6 @@ export default Ember.Component.extend({
   spotlightCSS: '',
 
   /**
-   Set to true if the tour is running
-
-   @property started
-   @type Boolean
-   @default false
-   */
-
-  started: false,
-
-  /**
    The point at which the tour will start
 
    @property firstTourStep
