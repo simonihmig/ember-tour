@@ -175,10 +175,10 @@ export default Ember.Component.extend({
    Exits the tour if the user initiated a route change, instead of the tour. Checks to see
    if the target element is still in the page after the transition; if not the tour ends.
 
-   @method checkForUserInitiatedTransition
+   @method _checkForUserInitiatedTransition
    */
 
-  checkForUserInitiatedTransition: (function(){
+  _checkForUserInitiatedTransition: (function(){
     var transitioning = this.get('transitioning');
     var element = this.get('currentStop.element');
     var elementOnPage = $(element);
