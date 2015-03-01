@@ -6,10 +6,8 @@
           <span class="tour-number tour-corner-circle">{{{stepNumber}}}</span>
         {{/if}}
         <div class="tour-body" {{bind-attr style=tourStopBodyCss}}>
-            <div class="row">
-                <div class="col-sm-12">
-                  {{{model.intro}}}
-                </div>
+            <div>
+              {{{model.intro}}}
             </div>
           {{yield}}
         </div>
