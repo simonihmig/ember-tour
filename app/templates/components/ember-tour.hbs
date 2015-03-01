@@ -9,23 +9,23 @@
               {{/each}}
             </ul>
         </div>
-        <div class="row tour-buttons">
+        <div class="tour-buttons">
 
           {{#if moreForwardSteps}}
 
             {{#if moreBackwardSteps}}
-                <div class="col-sm-6">
+                <div class="tour-button half">
 
                     <a class="icon-angle-double-left" {{action 'reverse'}}></a>
                 </div>
             {{else}}
-                <div class="col-sm-3"></div>
+                <div class="tour-button-half"></div>
             {{/if}}
-              <div class="col-sm-6">
+              <div class="tour-button-full">
                   <a class="icon-angle-double-right" {{action 'advance'}}></a>
               </div>
           {{else}}
-              <div class="col-sm-12">
+              <div class="tour-button-full">
                   <a {{action 'exitTour'}}>Done</a>
               </div>
           {{/if}}

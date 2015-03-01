@@ -138,6 +138,18 @@
   margin-top: 15px;
   padding: 5px;
   background: #ffffff;
-  border: 2px solid #414C6D; }
+  border: 2px solid #414C6D;
+  width: 100%;
+}
+
+.tour-buttons .tour-button.half {
+  width: 50%;
+  float: left;
+}
+
+.tour-button.full {
+  width: 100%;
+}
+
 .tour-buttons a {
   color: #414C6D; }
