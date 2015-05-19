@@ -42,10 +42,20 @@ export default Ember.Component.extend({
   transitioning: false,
 
   /**
+   The current tour stop
+
+   @property currentStop
+   @type Object
+   @default null
+   */
+
+  currentStop: null,
+
+  /**
    The previous tour stop
 
    @property previousStop
-   @type previousStop
+   @type Object
    @default null
    */
 
@@ -131,6 +141,15 @@ export default Ember.Component.extend({
       this.notifyPropertyChange('currentStopStep');
     }
   }).observes('started'),
+
+  /**
+   calls "changeStop" action when currentStop is changed
+   @private
+   @method _changeStop
+   */
+  _changeStop: Ember.observer('currentStop', function(){
+      this.sendAction('changeStop', this.get('currentStop'));
+  }),
 
   /**
    Set to true if there are stops after the `currentStop` in `tourStops`
