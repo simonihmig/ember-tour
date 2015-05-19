@@ -143,15 +143,6 @@ export default Ember.Component.extend({
   }).observes('started'),
 
   /**
-   calls "changeStop" action when currentStop is changed
-   @private
-   @method _changeStop
-   */
-  _changeStop: Ember.observer('currentStop', function(){
-      this.sendAction('changeStop', this.get('currentStop'));
-  }),
-
-  /**
    Set to true if there are stops after the `currentStop` in `tourStops`
 
    @property moreForwardSteps
@@ -322,12 +313,17 @@ export default Ember.Component.extend({
       currentStop = this.get('currentStop');
 
     transitionStop.set('active', true);
+    this.sendAction('beforeChangeStop', transitionStop, currentStop);
+
     this.setProperties({
       currentStop: transitionStop,
       previousStop: currentStop
     });
 
-    Ember.run.scheduleOnce('afterRender', this, function(){this.set('transitioning', false)});
+    Ember.run.scheduleOnce('afterRender', this, function(){
+        this.set('transitioning', false);
+        this.sendAction('changeStop', transitionStop, currentStop);
+    });
   },
 
   /**
