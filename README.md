@@ -40,7 +40,7 @@ scrollToElement: If set to true, tour will scroll to target elements that are ou
 
 ...
 
-{{ember-tour}}
+{{ember-tour started=tourStarted model=tour}}
 
 ...
 ```

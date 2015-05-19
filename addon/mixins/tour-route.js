@@ -20,7 +20,7 @@ export default Ember.Mixin.create({
   _actions: {
     startTour: function(name, startingStep) {
       var route = this;
-      var controller = this.controllerFor("application");
+      var controller = this.get('controller');
       var firstTourStep = startingStep || 0;
       var tourName = name || controller.get('activeContextTour') || 'application';
 

@@ -112,7 +112,7 @@ export default Ember.Component.extend({
    @type Boolean
    */
 
-  started: Ember.computed.alias('parentView.controller.tourStarted'),
+  started: null,
 
   /**
    The model of the tour
@@ -121,7 +121,7 @@ export default Ember.Component.extend({
    @type Object
    */
 
-  model: Ember.computed.alias('parentView.controller.tour'),
+  model: null,
 
   /**
    Starts the tour when `started` is changed to true
