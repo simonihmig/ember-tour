@@ -349,15 +349,12 @@ export default Ember.Component.extend({
    @method _addWindowListeners
    */
   _addWindowListeners: function() {
-    var component = this;
-    Ember.$(window).on('resize.tour', function(){
-      Ember.run(function() {
-        component._updateWindowSize();
-      });
-    });
-    Ember.$(window).on('scroll.tour', function(){
-      component.set('scrollTop', $(window).scrollTop());
-    });
+    Ember.$(window).on('resize.tour', Ember.run.bind(this, function(){
+      this._updateWindowSize();
+    }));
+    Ember.$(window).on('scroll.tour', Ember.run.bind(this, function(){
+      this.set('scrollTop', $(window).scrollTop());
+    }));
   },
 
   /**
