@@ -401,7 +401,9 @@ export default Ember.Component.extend({
   },
 
   willDestroy: function() {
-    this.exitTour();
+    if (this.get('started')) {
+      this.exitTour();
+    }
     this._removeWindowListeners();
   },
 
