@@ -327,38 +327,64 @@ export default Ember.Component.extend({
   },
 
   /**
-   Initializes a listener to track window height and width
+   Adds or removes listeners to track window height and width
 
    @private
    @method _windowSize
    */
 
   _windowSize: (function(){
-    var component = this;
-
-    component.setProperties({
-      windowWidth: $(window).width(),
-      windowHeight: $(window).height()
-    });
-
     if(this.get('started')){
-      Ember.$(window).on('resize.tour', function(){
-        Ember.run(function() {
-
-          component.setProperties({
-            windowWidth: $(window).width(),
-            windowHeight: $(window).height()
-          });
-        });
-      });
-      Ember.$(window).on('scroll.tour', function(){
-        component.set('scrollTop', $(window).scrollTop());
-      });
+      this._updateWindowSize();
+      this._addWindowListeners();
     } else {
-      Ember.$(window).off('resize.tour');
-      Ember.$(window).off('scroll.tour');
+      this._removeWindowListeners();
     }
   }).observes('started').on('init'),
+
+  /**
+   Add event listeners to track window height and width
+
+   @private
+   @method _addWindowListeners
+   */
+  _addWindowListeners: function() {
+    var component = this;
+    Ember.$(window).on('resize.tour', function(){
+      Ember.run(function() {
+        component._updateWindowSize();
+      });
+    });
+    Ember.$(window).on('scroll.tour', function(){
+      component.set('scrollTop', $(window).scrollTop());
+    });
+  },
+
+  /**
+   Remove event listeners
+
+   @private
+   @method _removeWindowListeners
+   */
+  _removeWindowListeners: function() {
+    Ember.$(window).off('resize.tour');
+    Ember.$(window).off('scroll.tour');
+  },
+
+  /**
+   Update window size
+
+   @private
+   @method _updateWindowSize
+   */
+  _updateWindowSize: function() {
+    if(!this.get('isDestroying')){
+      this.setProperties({
+        windowWidth: $(window).width(),
+        windowHeight: $(window).height()
+      });
+    }
+  },
 
   /**
    Deactivates the tour and sends action `endTour`
@@ -372,6 +398,11 @@ export default Ember.Component.extend({
     this.set('currentStop.active', false);
     this.set('previousStop', null);
     this.sendAction('endTour');
+  },
+
+  willDestroy: function() {
+    this.exitTour();
+    this._removeWindowListeners();
   },
 
   actions: {
