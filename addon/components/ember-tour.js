@@ -129,8 +129,8 @@ export default Ember.Component.extend({
    @method _startTour
    */
 
-  _startTour: (function(){
-    if(this.get('started')){
+  _startTour: (function() {
+    if (this.get('started')) {
       this.setProperties({
         transitionStop: null,
         currentStop: null
@@ -140,7 +140,7 @@ export default Ember.Component.extend({
       this.set('currentStopStep', startingStep);
       this.notifyPropertyChange('currentStopStep');
     }
-  }).observes('started'),
+  }).observes('started').on('init'),
 
   /**
    Set to true if there are stops after the `currentStop` in `tourStops`
@@ -150,7 +150,7 @@ export default Ember.Component.extend({
    */
 
   moreForwardSteps: Ember.computed('currentStopStep', 'sortedTourStops',
-    function(){
+    function() {
       return this.get('currentStopStep') + 1 < this.get('sortedTourStops.length');
     }
   ),
@@ -163,7 +163,7 @@ export default Ember.Component.extend({
    */
 
   moreBackwardSteps: Ember.computed('currentStopStep',
-    function(){
+    function() {
       return this.get('currentStopStep') > 0;
     }
   ),
@@ -174,12 +174,11 @@ export default Ember.Component.extend({
    @method pathChange
    */
 
-  pathChange: (function(){
-    if(this.get('currentStop') && this.get('started')) {
+  pathChange: (function() {
+    if (this.get('currentStop') && this.get('started')) {
       Ember.run.scheduleOnce('afterRender', this, this._checkForUserInitiatedTransition);
     }
   }).observes('currentPath'),
-
 
   /**
    Exits the tour if the user initiated a route change, instead of the tour. Checks to see
@@ -188,7 +187,7 @@ export default Ember.Component.extend({
    @method _checkForUserInitiatedTransition
    */
 
-  _checkForUserInitiatedTransition: (function(){
+  _checkForUserInitiatedTransition: (function() {
     var transitioning = this.get('transitioning');
     var element = this.get('currentStop.element');
     var elementOnPage = $(element);
@@ -205,9 +204,9 @@ export default Ember.Component.extend({
    */
 
   sortedTourStops: Ember.computed('tourStops',
-    function(){
+    function() {
       var tourStops = this.get('tourStops');
-      if(tourStops && tourStops.get('length')){
+      if (tourStops && tourStops.get('length')) {
         return tourStops.sortBy('step');
       }
     }
@@ -220,7 +219,7 @@ export default Ember.Component.extend({
    @method _setTransitionStop
    */
 
-  _setTransitionStop: (function(){
+  _setTransitionStop: (function() {
       var step = this.get('currentStopStep');
       var transitionStop = this.get('sortedTourStops').objectAt(step);
       this.set('transitionStop', transitionStop);
@@ -234,29 +233,29 @@ export default Ember.Component.extend({
    @method _startTourStopTransition
    */
 
-  _startTourStopTransition: (function(){
+  _startTourStopTransition: (function() {
     var transitionStop = this.get('transitionStop'),
       currentStop = this.get('currentStop');
 
-    if(currentStop){
+    if (currentStop) {
       currentStop.set('active', false);
     }
 
-    if(transitionStop) {
+    if (transitionStop) {
       this.set('transitioning', true);
 
       var previousStop = this.get('previousStop'),
         targetRoute = transitionStop.get('targetRoute'),
-        router = this.container.lookup('router:main').router,
+        router = Ember.getOwner(this).lookup('router:main')._routerMicrolib,
         renderedProperty = 'lastRenderedTemplate',
         targetElement = transitionStop.get('element'),
         route;
 
-      var allRoutes = Ember.keys(router.recognizer.names);
+      var allRoutes = Object.keys(router.recognizer.names);
       var routeExists = allRoutes.indexOf(targetRoute) !== -1;
 
       if (routeExists) {
-        route = this.container.lookup('route:' + targetRoute);
+        route = Ember.getOwner(this).lookup('route:' + targetRoute);
       }
 
       var currentRouteDifferent = !previousStop || previousStop.get('targetRoute') !== targetRoute;
@@ -286,15 +285,15 @@ export default Ember.Component.extend({
 
   _finishWhenElementInPage: function(element, waitTime) {
     var component = this;
-    if(!(typeof waitTime === "number")){
+    if (!(typeof waitTime === "number")) {
       waitTime = 5000
     }
-    if(!Ember.isBlank($(element))){
+    if (!Ember.isBlank($(element))) {
       this._finishTransition();
-    } else if(waitTime > 0) {
-      Ember.run.later(function () {
+    } else if (waitTime > 0) {
+      Ember.run.later(function() {
         component._finishWhenElementInPage(element, waitTime - 20);
-      },20);
+      }, 20);
     } else {
       this.incrementProperty('currentStopStep');
     }
@@ -320,9 +319,9 @@ export default Ember.Component.extend({
       previousStop: currentStop
     });
 
-    Ember.run.scheduleOnce('afterRender', this, function(){
-        this.set('transitioning', false);
-        this.sendAction('changeStop', transitionStop, currentStop);
+    Ember.run.scheduleOnce('afterRender', this, function() {
+      this.set('transitioning', false);
+      this.sendAction('changeStop', transitionStop, currentStop);
     });
   },
 
@@ -333,8 +332,8 @@ export default Ember.Component.extend({
    @method _windowSize
    */
 
-  _windowSize: (function(){
-    if(this.get('started')){
+  _windowSize: (function() {
+    if (this.get('started')) {
       this._updateWindowSize();
       this._addWindowListeners();
     } else {
@@ -349,10 +348,10 @@ export default Ember.Component.extend({
    @method _addWindowListeners
    */
   _addWindowListeners: function() {
-    Ember.$(window).on('resize.tour', Ember.run.bind(this, function(){
+    Ember.$(window).on('resize.tour', Ember.run.bind(this, function() {
       this._updateWindowSize();
     }));
-    Ember.$(window).on('scroll.tour', Ember.run.bind(this, function(){
+    Ember.$(window).on('scroll.tour', Ember.run.bind(this, function() {
       this.set('scrollTop', $(window).scrollTop());
     }));
   },
@@ -375,7 +374,7 @@ export default Ember.Component.extend({
    @method _updateWindowSize
    */
   _updateWindowSize: function() {
-    if(!this.get('isDestroying')){
+    if (!this.get('isDestroying')) {
       this.setProperties({
         windowWidth: $(window).width(),
         windowHeight: $(window).height()
@@ -389,10 +388,15 @@ export default Ember.Component.extend({
    @method exitTour
    */
 
-  exitTour: function(){
+  exitTour: function() {
+
     this.set('started', false);
-    this.set('transitionStop.active', false);
-    this.set('currentStop.active', false);
+    if (this.get('transitionStop')) {
+      this.set('transitionStop.active', false);
+    }
+    if (this.get('currentStop')) {
+      this.set('currentStop.active', false);
+    }
     this.set('previousStop', null);
     this.sendAction('endTour');
   },
@@ -411,7 +415,7 @@ export default Ember.Component.extend({
      @method exitTour
      */
 
-    exitTour: function(){
+    exitTour: function() {
       this.exitTour();
     },
 
@@ -421,7 +425,7 @@ export default Ember.Component.extend({
      @method advance
      */
 
-    advance: function(){
+    advance: function() {
       this.incrementProperty('currentStopStep', 1);
     },
 
@@ -431,7 +435,7 @@ export default Ember.Component.extend({
      @method reverse
      */
 
-    reverse: function(){
+    reverse: function() {
       this.decrementProperty('currentStopStep', 1);
     },
 
@@ -441,7 +445,7 @@ export default Ember.Component.extend({
      @param number {Integer} the position of the stop
      */
 
-    goToStep: function(number){
+    goToStep: function(number) {
       this.set('currentStopStep', number);
     },
 
@@ -451,7 +455,7 @@ export default Ember.Component.extend({
      @param id
      */
 
-    goToStop: function(id){
+    goToStop: function(id) {
       var sortedTourStops = this.get('sortedTourStops');
       var tourStop = sortedTourStops.findBy('id', id);
       var position = sortedTourStops.indexOf(tourStop);

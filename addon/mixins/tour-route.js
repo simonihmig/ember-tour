@@ -17,7 +17,7 @@ export default Ember.Mixin.create({
     }
   },
 
-  _actions: {
+  actions: {
     startTour: function(name, startingStep) {
       var route = this;
       var controller = this.get('controller');
